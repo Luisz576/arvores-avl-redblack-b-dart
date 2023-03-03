@@ -1,8 +1,17 @@
+import 'dart:math';
+
 import 'package:arvores_avl_redblack_b/src/interfaces/node.dart';
 
-class NodeAVL extends Node<NodeAVL>{
-  int get height => (left == null ? 0 : left!.height) - (right == null ? 0 : right!.height);
+class NodeAVL<V> extends Node<V>{
+  NodeAVL? parent, left, right;
 
-  NodeAVL(int value, NodeAVL? left, NodeAVL? right)
-    : super(value, left, right);
+  int get height{
+    return 1 + max(leftHeight, rightHeight);
+  }
+  int get leftHeight => left == null ? 0 : left!.height;
+  int get rightHeight => right == null ? 0 : right!.height;
+
+  int get weight => rightHeight - leftHeight;
+
+  NodeAVL(super.id, super.value, this.parent);
 }

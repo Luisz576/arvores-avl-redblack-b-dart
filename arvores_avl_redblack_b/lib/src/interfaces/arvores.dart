@@ -1,7 +1,6 @@
 /// Base das arvores
-abstract class Arvore{
-  insert(int value);
-  remove(int value);
-  /// arvore.foreach((value, index){...});
-  foreach(Function(int) consumer);
+abstract class Arvore<V>{
+  insert(id, V value);
+  remove(id);
+  V? find(id);
 }
