@@ -13,6 +13,10 @@ void main() {
   b.insert(2, "dois");
   b.insert(1, "um");
   b.insert(3, "três");
+  b.insert(7, "sete");
   b.insert(4, "quatro");
-  print(b.find(4));
+  b.insert(5, "cinco");
+  b.insert(6, "seis");
+  b.insert(0, "zero");
+  print(b.find(3));
 }

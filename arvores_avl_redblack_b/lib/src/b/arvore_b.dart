@@ -2,21 +2,24 @@ import 'package:arvores_avl_redblack_b/arvores_avl_redblack_b.dart';
 
 class ArvoreB<V> extends Arvore<V>{
   final int maxDegree;
-  late final NodeB _root;
+  late NodeB<V> _root;
 
   @override
   V? find(id) {
-    return _root.get(id);
+    return _root.find(id);
   }
 
   @override
   insert(id, V value) {
-    //TODO:
+    _root.insert(id, value);
+    while(_root.parent != null){
+      _root = _root.parent!;
+    }
   }
 
   @override
   remove(id) {
-
+    _root.remove(id);
   }
 
   ArvoreB(this.maxDegree){
