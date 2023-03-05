@@ -62,10 +62,9 @@ class NodeB<V> extends Arvore<V>{
       rightNode.rightChild = rightToRight;
       rightNode.sort();
       
-      if(parent == null){
-        NodeB<V> newParent = NodeB<V>(maxDegree);
-        parent = newParent;
-      }
+      parent ??= NodeB<V>(maxDegree);
+
+      rightNode.parent = parent;
       parent!.insertNodeWithRight(element, rightNode);
     }
   }
@@ -74,11 +73,21 @@ class NodeB<V> extends Arvore<V>{
     _elements.sort((a, b) => a.id > b.id ? 1 : a.id < b.id ? -1 : 0);
   }
 
+  NodeB<V> getNextNodeOrSelf(id){
+    return _elements.firstWhere((element) => element.id > id, orElse: () => _empty).leftChild ?? rightChild ?? this;
+  }
+
   @override
   insert(id, V value) {
     NodeB<V> n = this;
-    //TODO: ir o mais fundo da arvore o possível
-    insertNode(NodeBElement<V>(id, value));
+    NodeB<V> oldN;
+
+    do{
+      oldN = n;
+      n = n.getNextNodeOrSelf(id);
+    }while(oldN != n);
+
+    n.insertNode(NodeBElement<V>(id, value));
   }
 
   @override

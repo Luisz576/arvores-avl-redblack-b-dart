@@ -18,5 +18,8 @@ void main() {
   b.insert(5, "cinco");
   b.insert(6, "seis");
   b.insert(0, "zero");
-  print(b.find(3));
+  b.insert(8, "oito");
+  b.insert(9, "oito");
+  b.insert(10, "oito");
+  print(b.find(5));
 }
