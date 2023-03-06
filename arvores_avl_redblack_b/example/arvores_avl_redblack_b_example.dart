@@ -2,8 +2,10 @@ import 'package:arvores_avl_redblack_b/arvores_avl_redblack_b.dart';
 
 void main() {
   final avl = ArvoreAVL<String>();
+  avl.insert(5, "cinco");
   avl.insert(2, "dois");
-  avl.insert(1, "um");
+  avl.insert(10, "dez");
+  avl.insert(4, "quatro");
   avl.insert(3, "três");
   print(avl.find(3));
   

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:arvores_avl_redblack_b/src/interfaces/node.dart';
 
 class NodeAVL<V> extends Node<V>{
-  NodeAVL? parent, left, right;
+  NodeAVL<V>? parent, left, right;
 
   int get height{
     return 1 + max(leftHeight, rightHeight);
