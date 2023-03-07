@@ -10,6 +10,12 @@ void main() {
   print(avl.find(3));
   
   final redblack = ArvoreRedBlack();
+  redblack.insert(5, "cinco");
+  redblack.insert(2, "dois");
+  redblack.insert(10, "dez");
+  redblack.insert(3, "três");
+  redblack.insert(4, "quatro");
+  print(redblack.find(4));
 
   final b = ArvoreB(3);
   b.insert(2, "dois");
@@ -21,7 +27,7 @@ void main() {
   b.insert(6, "seis");
   b.insert(0, "zero");
   b.insert(8, "oito");
-  b.insert(9, "oito");
-  b.insert(10, "oito");
+  b.insert(9, "nove");
+  b.insert(10, "dez");
   print(b.find(5));
 }

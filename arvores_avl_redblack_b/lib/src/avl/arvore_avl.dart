@@ -27,68 +27,73 @@ class ArvoreAVL<V> extends Arvore<V>{
       }
       node = node.right!;
     }
-    _verifyAndBalanceIfItNeeds(node);
+    _verifyAndBalance(node.parent);
   }
 
-  _verifyAndBalanceIfItNeeds(NodeAVL<V> addedNode){
-    NodeAVL<V> node = addedNode;
-    while(true){
-      NodeAVL<V>? parent = node.parent;
-      if(parent == null){
+  _verifyAndBalance(NodeAVL<V>? node){
+    while(node != null){
+      node = node.parent;
+      if(node == null){
         return;
       }
-      node = parent;
-      if(parent.weight > 1){
-        _balanceIt(parent, false);
+      if(node.weight > 1){
+        if(node.right!.weight < 0){
+          node = _doDoubleRotation(node, true);
+          continue;
+        }
+        _doRotation(node, false);
         continue;
       }
-      if(parent.weight < -1){
-        _balanceIt(parent, true);
-        continue;
+      if(node.weight < -1){
+        if(node.left!.weight > 0){
+          node = _doDoubleRotation(node, false);
+          continue;
+        }
+        _doRotation(node, true);
       }
     }
   }
 
-  _balanceIt(NodeAVL<V> node, bool balanceToLeft){
-    if(balanceToLeft){
-      NodeAVL<V> rightNode = node.right!;
-      if(node.parent == null){
-        _root = rightNode;
-        rightNode.parent = null;
-        rightNode.left = node;
-        node.parent = rightNode;
-        node.right = rightNode.left;
-        return;
+  NodeAVL<V> _doDoubleRotation(NodeAVL<V> node, toLeftFirst){
+    _doRotation(toLeftFirst ? node.right!: node.left!, toLeftFirst);
+    _doRotation(node, !toLeftFirst);
+    return node;
+  }
+
+  _doRotation(NodeAVL<V> node, toLeft){
+    if(toLeft){
+      NodeAVL<V> leftNode = node.left!;
+      if(_root == node){
+        _root = leftNode;
       }
-      rightNode.parent = node.parent;
+      leftNode.parent = node.parent;
+      if(node.parent != null){
+        if(node.parent!.left == node){
+          node.parent!.left = leftNode;
+        }else{
+          node.parent!.right = leftNode;
+        }
+      }
+      node.left = leftNode.right;
+      node.parent = leftNode;
+      leftNode.right = node;
+      return;
+    }
+    NodeAVL<V> rightNode = node.right!;
+    if(_root == node){
+      _root = rightNode;
+    }
+    rightNode.parent = node.parent;
+    if(node.parent != null){
       if(node.parent!.left == node){
         node.parent!.left = rightNode;
       }else{
         node.parent!.right = rightNode;
       }
-      node.parent = rightNode;
-      node.right = rightNode.left;
-      rightNode.left = node;
-      return;
     }
-    NodeAVL<V> leftNode = node.left!; //TODO: ajustar
-    if(node.parent == null){
-      _root = leftNode;
-      leftNode.parent = null;
-      leftNode.right = node;
-      node.parent = leftNode;
-      node.left = leftNode.right;
-      return;
-    }
-    leftNode.parent = node.parent;
-    if(node.parent!.left == node){
-      node.parent!.left = leftNode;
-    }else{
-      node.parent!.right = leftNode;
-    }
-    node.parent = leftNode;
-    node.left = leftNode.right;
-    leftNode.right = node;
+    node.right = rightNode.left;
+    node.parent = rightNode;
+    rightNode.left = node;
   }
 
   @override
