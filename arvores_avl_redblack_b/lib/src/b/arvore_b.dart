@@ -1,7 +1,7 @@
 import 'package:arvores_avl_redblack_b/arvores_avl_redblack_b.dart';
 
 class ArvoreB<V> extends Arvore<V>{
-  final int maxDegree;
+  late final int maxDegree, minDegree;
   late NodeB<V> _root;
 
   @override
@@ -22,7 +22,17 @@ class ArvoreB<V> extends Arvore<V>{
     _root.remove(id);
   }
 
-  ArvoreB(this.maxDegree){
-    _root = NodeB(maxDegree);
+  ArvoreB.t(int t){
+    maxDegree = 2*t - 1;
+    minDegree = t - 1;
+    _root = NodeB(maxDegree, minDegree);
+  }
+  ArvoreB.maxDegree(this.maxDegree){
+    minDegree = ((maxDegree + 1) / 2).ceil() - 1;
+    _root = NodeB(maxDegree, minDegree);
+  }
+  ArvoreB.minDegree(this.minDegree){
+    maxDegree = 2*(minDegree+1) - 1;
+    _root = NodeB(maxDegree, minDegree);
   }
 }

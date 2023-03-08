@@ -4,7 +4,7 @@ import 'package:arvores_avl_redblack_b/src/b/node_b_element.dart';
 class NodeB<V> extends Arvore<V>{
   final NodeBElement<V> _empty = NodeBElement.empty();
 
-  final int maxDegree;
+  final int maxDegree, minDegree;
   final List<NodeBElement<V>> _elements = [];
   NodeB<V>? parent, rightChild;
 
@@ -55,14 +55,14 @@ class NodeB<V> extends Arvore<V>{
       rightChild = element.leftChild;
       element.leftChild = this;
 
-      NodeB<V> rightNode = NodeB<V>(maxDegree);
+      NodeB<V> rightNode = NodeB<V>(maxDegree, minDegree);
       while(_elements.length > middle){
         rightNode.insertNode(_elements.removeAt(middle));
       }
       rightNode.rightChild = rightToRight;
       rightNode.sort();
       
-      parent ??= NodeB<V>(maxDegree);
+      parent ??= NodeB<V>(maxDegree, minDegree);
 
       rightNode.parent = parent;
       parent!.insertNodeWithRight(element, rightNode);
@@ -92,12 +92,28 @@ class NodeB<V> extends Arvore<V>{
 
   @override
   remove(id) {
-    
+    if(contains(id)){
+      _elements.remove(_elements.firstWhere((element) => element.id == id));
+      if(_elements.length < minDegree){
+        //TODO: balancear
+        
+        return true;
+      }
+      return true;
+    }
+    NodeB<V>? next = _elements.firstWhere((element) => element.id > id, orElse: () => _empty).leftChild;
+    if(next == null){
+      return false;
+    }
+    return next.remove(id);
   }
 
-  NodeB(this.maxDegree){
+  NodeB(this.maxDegree, this.minDegree){
     if(maxDegree < 1){
       throw "Invalid maxDegree value!";
+    }
+    if(minDegree < 0){
+      throw "Invalid minDegree value!";
     }
   }
 }
