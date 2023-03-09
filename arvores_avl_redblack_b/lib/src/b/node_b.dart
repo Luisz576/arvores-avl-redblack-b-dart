@@ -102,6 +102,7 @@ class NodeB<V> extends Arvore<V>{
       return true;
     }
     NodeB<V>? next = _elements.firstWhere((element) => element.id > id, orElse: () => _empty).leftChild;
+    next ??= rightChild;
     if(next == null){
       return false;
     }

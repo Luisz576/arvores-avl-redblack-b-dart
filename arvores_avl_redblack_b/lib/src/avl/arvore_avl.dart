@@ -5,6 +5,7 @@ class ArvoreAVL<V> extends Arvore<V>{
 
   @override
   insert(id, V value){
+    if(id == null) return;
     if(_root == null){
       _root = NodeAVL(id, value, null);
       return;
@@ -98,11 +99,73 @@ class ArvoreAVL<V> extends Arvore<V>{
 
   @override
   remove(id){
-    
+    if(id == null) return;
+    NodeAVL<V>? node = _root;
+    while(node != null){
+      if(node.id == id){
+        node = _remove(node);
+        while(node != null){
+          _verifyAndBalance(node);
+          node = node.parent;
+        }
+        return;
+      }
+      node = id < node.id ? node.left : node.right;
+    }
+  }
+
+  _remove(NodeAVL<V> node){
+    if(node.parent == null){
+      if(node.left == null){
+        _root = node.right;
+        _root?.parent = null;
+        return _root;
+      }
+      NodeAVL<V> toInsert = node.left!;
+      while(toInsert.right != null){
+        toInsert = toInsert.right!;
+      }
+      NodeAVL<V> parent = toInsert.parent!;
+      toInsert.parent = null;
+      if(toInsert == node.left){
+        _root = toInsert;
+        toInsert.right = node.right;
+        return _root;
+      }
+      parent.right = toInsert.left;
+      toInsert.left = _root!.left;
+      toInsert.right = _root!.right;
+      _root = toInsert;
+      return parent;
+    }
+
+    NodeAVL<V> parent = node.parent!;
+    if(node.left == null){
+      if(parent.left == node){
+        parent.left = node.right;
+        return parent.left;
+      }
+      parent.right = node.right;
+      return parent.right;
+    }
+
+    NodeAVL<V> toInsert = node.left!;
+    while(toInsert.right != null){
+      toInsert = toInsert.right!;
+    }
+    toInsert.parent = parent;
+    toInsert.right = node.right;
+    if(parent.left == node){
+      parent.left = toInsert;
+      return toInsert;
+    }
+    parent.right = toInsert;
+    return toInsert.left ?? toInsert.right;
   }
 
   @override
   V? find(id){
+    if(id == null) return null;
     NodeAVL? node = _root;
     while(node != null){
       if(id == node.id){

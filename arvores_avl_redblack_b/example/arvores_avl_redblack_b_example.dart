@@ -7,7 +7,15 @@ void main() {
   avl.insert(10, "dez");
   avl.insert(4, "quatro");
   avl.insert(3, "três");
+  avl.insert(9, "nove");
+  avl.insert(8, "oito");
+  avl.insert(1, "um");
   print(avl.find(3));
+  avl.remove(3);
+  avl.remove(5);
+  avl.insert(11, "onze");
+  avl.remove(9);
+  print(avl.find(11));
   
   final redblack = ArvoreRedBlack();
   redblack.insert(5, "cinco");
