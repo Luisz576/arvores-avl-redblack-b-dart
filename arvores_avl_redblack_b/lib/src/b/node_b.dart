@@ -1,120 +1,153 @@
-import 'package:arvores_avl_redblack_b/arvores_avl_redblack_b.dart';
 import 'package:arvores_avl_redblack_b/src/b/node_b_element.dart';
 
-class NodeB<V> extends Arvore<V>{
-  final NodeBElement<V> _empty = NodeBElement.empty();
+class NodeB<V>{
 
-  final int maxDegree, minDegree;
-  final List<NodeBElement<V>> _elements = [];
-  NodeB<V>? parent, rightChild;
+  final int t;
+  late final int maxDegree, minDegree;
 
-  int get lenght => _elements.length;
+  final bool isSheet;
+
+  NodeB<V>? parent, left, right;
+
+  final List<NodeBElement<V>?> _elements = [];
+  final List<NodeB<V>?> _children = [];
+
+  int _lenght = 0;
+
+  int get lenght => _lenght;
+
+  NodeB<V>? getChildAt(index){
+    if(index >= 0 && index < lenght + 1){
+      return _children[index];
+    }
+    return null;
+  }
+
+  NodeBElement<V>? getElementAt(index){
+    if(index >= 0 && index < lenght){
+      return _elements[index];
+    }
+    return null;
+  }
+
+  int _getPositionToNewElement(id){
+    for(int i = 0; i < lenght; i++){
+        if(id < _elements[i]!.id){
+            return i;
+        }
+    }
+    return lenght;
+  }
+
+  int _getElementPosition(id){
+    for(int i = 0; i < lenght; i++){
+        if(id == _elements[i]!.id){
+            return i;
+        }
+    }
+    return -1;
+  }
 
   bool contains(id){
-    return _elements.any((element) => element.id == id);
+    for(int i = 0; i < lenght; i++){
+        if(_elements[i]!.id == id){
+            return true;
+        }
+    }
+    return false;
   }
 
-  @override
-  V? find(id) {
-    if(contains(id)){
-      return _elements.firstWhere((element) => element.id == id).value;
-    }
-    NodeB<dynamic>? child = _elements.firstWhere((element) => element.id != null && element.id > id, orElse: () => _empty).leftChild;
-    if(child == null){
-      if(rightChild == null){
+  NodeB<V>? getNextNodeToElement(id){
+    if(isSheet){
         return null;
-      }
-      return rightChild!.find(id);
     }
-    return child.find(id);
+    
+    for(int i = 0; i < lenght; i++){
+        if(id < _elements[i]!.id){
+            return _children[i];   
+        }
+    }       
+    
+    return _children[lenght];
   }
 
-  insertNodeWithRight(NodeBElement<V> n, NodeB<V> r){
-    _elements.add(n);
-    sort();
-    if(_elements.last == n){
-      rightChild = r;
-    }else{
-      NodeBElement<V> nextToN = _elements.firstWhere((element) => element.id > n.id);
-      nextToN.leftChild = r;
-    }
-    _verifyAndSortIfItNeeds();
+  remove(){
+
   }
 
-  insertNode(NodeBElement<V> n){
-    _elements.add(n);
-    sort();
-    _verifyAndSortIfItNeeds();
-  }
-
-  _verifyAndSortIfItNeeds(){
-    if(lenght > maxDegree){
-      int middle = (maxDegree / 2).ceil() - 1;
-      NodeBElement<V> element = _elements.removeAt(middle);
-      NodeB<V>? rightToRight = rightChild;
-      rightChild = element.leftChild;
-      element.leftChild = this;
-
-      NodeB<V> rightNode = NodeB<V>(maxDegree, minDegree);
-      while(_elements.length > middle){
-        rightNode.insertNode(_elements.removeAt(middle));
-      }
-      rightNode.rightChild = rightToRight;
-      rightNode.sort();
-      
-      parent ??= NodeB<V>(maxDegree, minDegree);
-
-      rightNode.parent = parent;
-      parent!.insertNodeWithRight(element, rightNode);
-    }
-  }
-
-  sort(){
-    _elements.sort((a, b) => a.id > b.id ? 1 : a.id < b.id ? -1 : 0);
-  }
-
-  NodeB<V> getNextNodeOrSelf(id){
-    return _elements.firstWhere((element) => element.id > id, orElse: () => _empty).leftChild ?? rightChild ?? this;
-  }
-
-  @override
-  insert(id, V value) {
-    NodeB<V> n = this;
-    NodeB<V> oldN;
-
-    do{
-      oldN = n;
-      n = n.getNextNodeOrSelf(id);
-    }while(oldN != n);
-
-    n.insertNode(NodeBElement<V>(id, value));
-  }
-
-  @override
-  remove(id) {
-    if(contains(id)){
-      _elements.remove(_elements.firstWhere((element) => element.id == id));
-      if(_elements.length < minDegree){
-        //TODO: balancear
+  NodeBElement<V>? removeElementAt(int index){  
+    if(index >= 0 && index < lenght){
+        NodeBElement<V> element = _elements[index]!;
         
-        return true;
-      }
-      return true;
+        for(int i = index; i < lenght - 1; i++) {
+          _elements[i] = _elements[i + 1];
+        }
+        
+        _elements[lenght - 1] = null;
+        
+        _lenght--;
+        
+        return element;
     }
-    NodeB<V>? next = _elements.firstWhere((element) => element.id > id, orElse: () => _empty).leftChild;
-    next ??= rightChild;
-    if(next == null){
-      return false;
-    }
-    return next.remove(id);
+    
+    return null;
   }
 
-  NodeB(this.maxDegree, this.minDegree){
-    if(maxDegree < 1){
-      throw "Invalid maxDegree value!";
+
+  NodeBElement<V>? removeLastElement(){                  
+    return removeElementAt(lenght - 1);
+  }
+
+  int removeElement(id){
+    int pos = _getElementPosition(id); 
+    
+    if(pos == -1){
+      return -1;
     }
-    if(minDegree < 0){
-      throw "Invalid minDegree value!";
+
+    removeElementAt(pos);
+    
+    return pos;
+  }
+
+  insertChild(NodeB<V> child, int pos){
+
+  }
+
+  int insert(NodeBElement<V> element){
+    int pos = _getPositionToNewElement(element.id); 
+    
+    _insertNewElementAt(element, pos);
+    
+    return pos;
+  }
+
+  _insertNewElementAt(NodeBElement<V> element, pos){
+    if(pos >= 0 && pos <= maxDegree){
+        _lenght++;
+        for(int i = (lenght - 1); i > pos; i--){
+            _elements[i] = _elements[i - 1];
+        }
+        _elements[pos] = element;
+    }
+  }
+
+  _destroy(){
+    parent = null;
+    left = null;
+    right = null;
+    _children.clear();
+    _elements.clear();
+  }
+
+  NodeB.empty(this.t, this.isSheet){
+    maxDegree = 2 * t - 1;
+    minDegree = t - 1;
+    for(int i = 0; i < maxDegree + 1; i++){
+      _children.add(null);
+      if(i < maxDegree){
+        _elements.add(null);
+      }
     }
   }
 }
