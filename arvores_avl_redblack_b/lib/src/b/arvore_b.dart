@@ -107,8 +107,8 @@ class ArvoreB<V> extends Arvore<V>{
       
       if(no.lenght > maxDegree){
 
-        List<NodeB<V>>? novosFilhos = no.splitChildren();
-        List<NodeBElement<V>> novasChaves = no.splitElementas();
+        List<NodeB<V>>? novosFilhos = no.splitChildren(); 
+        List<NodeBElement<V>> novasChaves = no.splitElementas(); 
         int newNumberOfKeys = maxDegree - no.lenght;
             
         NodeB<V> novoNo = NodeB.empty(maxDegree, no.isSheet);

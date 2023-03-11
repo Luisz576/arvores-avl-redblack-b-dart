@@ -25,7 +25,7 @@ void main() {
   redblack.insert(4, "quatro");
   print(redblack.find(4));
 
-  final b = ArvoreB.maxDegree(3);
+  final b = ArvoreB(2);
   b.insert(2, "dois");
   b.insert(1, "um");
   b.insert(3, "três");
