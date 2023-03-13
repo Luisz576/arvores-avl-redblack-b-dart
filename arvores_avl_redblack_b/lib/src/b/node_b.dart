@@ -1,7 +1,6 @@
 import 'package:arvores_avl_redblack_b/src/b/node_b_element.dart';
 
 class NodeB<V>{
-
   List<dynamic> get callElements{
     List<dynamic> view = [];
 
@@ -52,36 +51,36 @@ class NodeB<V>{
 
   int _getPositionToNewElement(id){
     for(int i = 0; i < lenght; i++){
-        if(id < _elements[i]!.id){
-            return i;
-        }
+      if(id < _elements[i]!.id){
+          return i;
+      }
     }
     return lenght;
   }
 
   int _getElementPosition(id){
     for(int i = 0; i < lenght; i++){
-        if(id == _elements[i]!.id){
-            return i;
-        }
+      if(id == _elements[i]!.id){
+          return i;
+      }
     }
     return -1;
   }
 
   bool contains(id){
     for(int i = 0; i < lenght; i++){
-        if(_elements[i]!.id == id){
-            return true;
-        }
+      if(_elements[i]!.id == id){
+          return true;
+      }
     }
     return false;
   }
 
   V? get(id){
     for(int i = 0; i < lenght; i++){
-        if(_elements[i]!.id == id){
-            return _elements[i]!.value;
-        }
+      if(_elements[i]!.id == id){
+          return _elements[i]!.value;
+      }
     }
     return null;
   }
@@ -92,33 +91,36 @@ class NodeB<V>{
     }
     
     for(int i = 0; i < lenght; i++){
-        if(id < _elements[i]!.id){
-            return _children[i];   
-        }
+      if(id < _elements[i]!.id){
+          return _children[i];   
+      }
     }       
     
     return _children[lenght];
   }
 
-  remove(){
-
+  int getElementPosition(int id){
+    for(int i = 0; i < _lenght; i++){
+      if(id == _elements[i]!.id){
+        return i;
+      }
+    }
+    return -1;
   }
 
   NodeBElement<V>? removeElementAt(int index){  
     if(index >= 0 && index < lenght){
-        NodeBElement<V> element = _elements[index]!;
-        
-        for(int i = index; i < lenght - 1; i++) {
-          _elements[i] = _elements[i + 1];
-        }
-        
-        _elements[lenght - 1] = null;
-        
-        _lenght--;
-        
-        return element;
+      NodeBElement<V> element = _elements[index]!;
+
+      for(int i = index; i < lenght - 1; i++) {
+        _elements[i] = _elements[i + 1];
+      }
+      
+      _elements[lenght - 1] = null;
+      _lenght--;
+
+      return element;
     }
-    
     return null;
   }
 
@@ -128,22 +130,17 @@ class NodeB<V>{
   }
 
   int removeElement(id){
-    int pos = _getElementPosition(id); 
-    
+    int pos = _getElementPosition(id);
     if(pos == -1){
       return -1;
     }
-
     removeElementAt(pos);
-    
     return pos;
   }
 
   insertElement(NodeBElement<V> element){
-    int pos = _getPositionToNewElement(element.id); 
-        
+    int pos = _getPositionToNewElement(element.id);
     _insertNewElementAt(element, pos);
-    
     return pos;
   }
 
@@ -151,9 +148,7 @@ class NodeB<V>{
     if(child == null || pos < 0 || pos > maxDegree + 1){
       return;
     }
-
     NodeB<V>? p = pos > 0 ? _children[pos - 1] : null;
-
     child.left = p; 
     
     if(p != null){
@@ -161,14 +156,11 @@ class NodeB<V>{
     }
     
     p = pos < _lenght + 1 ? _children[pos] : null;
-
     child.right = p;
     
     if(p != null){
       p.left = child;
     }
-    
-    p = null;
 
     for(int i = _lenght; i > pos; i--){
         _children[i] = _children[i - 1]; 
@@ -187,11 +179,11 @@ class NodeB<V>{
 
   _insertNewElementAt(NodeBElement<V> element, pos){
     if(pos >= 0 && pos <= maxDegree){
-        _lenght++;
-        for(int i = (lenght - 1); i > pos; i--){
-            _elements[i] = _elements[i - 1];
-        }
-        _elements[pos] = element;
+      _lenght++;
+      for(int i = (lenght - 1); i > pos; i--){
+          _elements[i] = _elements[i - 1];
+      }
+      _elements[pos] = element;
     }
   }
 
@@ -218,9 +210,9 @@ class NodeB<V>{
     _children[_middleI]!.left = null;
     
     for(int i = _middleI; i < _lenght + 1; i++){
-        childrenSepareted.add(_children[i]!);
-        childrenSepareted[i - _middleI].parent = null;
-        _children[i] = null; 
+      childrenSepareted.add(_children[i]!);
+      childrenSepareted[i - _middleI].parent = null;
+      _children[i] = null; 
     }
     
     _children[_middleI - 1]!.right = null;
@@ -228,7 +220,13 @@ class NodeB<V>{
     return childrenSepareted;
   }
 
-  _destroy(){
+  replaceElementAt(NodeBElement<V> element, int pos){
+    if(pos >= 0 && pos < _lenght){
+      _elements[pos] = element;
+    }
+  }
+
+  _destroy(){//TODO:
     parent = null;
     left = null;
     right = null;

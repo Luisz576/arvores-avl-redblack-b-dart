@@ -1,5 +1,5 @@
 /// Base das arvores
-abstract class Arvore<V>{
+abstract class Tree<V>{
   insert(id, V value);
   remove(id);
   V? find(id);

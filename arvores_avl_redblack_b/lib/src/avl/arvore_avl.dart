@@ -1,7 +1,7 @@
 import 'package:arvores_avl_redblack_b/arvores_avl_redblack_b.dart';
 import 'package:arvores_avl_redblack_b/src/avl/node_avl.dart';
 
-class ArvoreAVL<V> extends Arvore<V>{
+class ArvoreAVL<V> extends Tree<V>{
   NodeAVL<V>? _root;
 
   @override
