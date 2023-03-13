@@ -37,7 +37,10 @@ void main() {
   b.insert(8, "oito");
   b.insert(9, "nove");
   b.insert(10, "dez");
-  print(b.find(5));
-  b.remove(5);
-  print(b.find(5));
+  print(b.find(9));
+  b.remove(9);
+  b.insert(11, "onze");
+  b.insert(12, "doze");
+  print(b.find(12));
+  print(b.find(9));
 }

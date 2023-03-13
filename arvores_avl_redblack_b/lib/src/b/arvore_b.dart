@@ -4,6 +4,9 @@ import 'package:arvores_avl_redblack_b/src/interfaces/arvores.dart';
 import 'package:arvores_avl_redblack_b/src/interfaces/wrapper.dart';
 
 class ArvoreB<V> extends Arvore<V>{
+
+  NodeB<V>? get callRoot => _root;
+
   final int t;
   late final int minDegree, maxDegree;
 
@@ -21,13 +24,13 @@ class ArvoreB<V> extends Arvore<V>{
     minDegree = t - 1;
   }
 
-  NodeB<V>? _getNodeToInsertNewElement(id, Wrapper<int> nodeLevel){
+  NodeB<V>? _getNodeToInsertNewElement(id, int stopLevel,  Wrapper<int> nodeLevel){
       nodeLevel.v = 1;
       
       NodeB<V>? noAux = _root;
       
       while(noAux != null){
-          if(noAux.isSheet) {
+          if((stopLevel == nodeLevel.v) || noAux.isSheet) {
             return noAux;
           }
                                             
@@ -45,6 +48,7 @@ class ArvoreB<V> extends Arvore<V>{
       return null;
     }
 
+    return _search(id)?.get(id);
   }
 
   NodeB<V>? _search(id, {Wrapper<int>? nodeLevel}){     
@@ -66,7 +70,7 @@ class ArvoreB<V> extends Arvore<V>{
   }
 
   @override
-  bool insert(id, V value) { 
+  bool insert(id, V value) {
     Wrapper<int> nodeLevel = Wrapper(-1);
     
     NodeB<V>? n = _root == null ? null : _search(id, nodeLevel: nodeLevel);
@@ -75,7 +79,7 @@ class ArvoreB<V> extends Arvore<V>{
       return false;
     }
         
-    n = _root == null ? null : _getNodeToInsertNewElement(id, nodeLevel);   
+    n = _root == null ? null : _getNodeToInsertNewElement(id, -1, nodeLevel);   
     
     _lenght++;
     
@@ -101,56 +105,52 @@ class ArvoreB<V> extends Arvore<V>{
       int pos = no!.insert(element);
       
       if(right != null){
-          right->setAscendente(no);
+          right.parent = no;
           no.insertChild(right, pos + 1);
       }
       
       if(no.lenght > maxDegree){
-
-        List<NodeB<V>>? novosFilhos = no.splitChildren(); 
-        List<NodeBElement<V>> novasChaves = no.splitElementas(); 
-        int newNumberOfKeys = maxDegree - no.lenght;
+        int oldL = no.lenght;
+        List<NodeB<V>>? newChildren = no.splitChildren();
+        List<NodeBElement<V>> newElements = no.splitElementas();
+        int newNumberOfKeys = oldL - no.lenght;
             
-        NodeB<V> novoNo = NodeB.empty(maxDegree, no.isSheet);
+        NodeB<V> newNode = NodeB.empty(t, no.isSheet);
       	   
-        novoNo.right = no.right;
-        novoNo.left = no;
+        newNode.right = no.right;
+        newNode.left = no;
         
         if(no.right != null){
-          no.right!.left = novoNo;
+          no.right!.left = newNode;
         }
         
-        no.right = novoNo;	
+        no.right = newNode;	
         
         for(int i = 0; i < newNumberOfKeys; i++){
-          novoNo.insertElement(novasChaves[i]); //TODO: criar insertElement para nã oduplicar classe
+          newNode.insertElement(newElements[i]);
         }
-                
-        novasChaves.clear();
       
-        if(novosFilhos != null){
-          for(int i=0; i < newNumberOfKeys + 1; i++){  
-              NodeB<V> f = novosFilhos[i];        
-              f->setAscendente(novoNo);
-              novoNo.insertChild(f, i);
+        if(newChildren != null){
+          for(int i = 0; i < newChildren.length; i++){  
+              NodeB<V> f = newChildren[i];        
+              f.parent = newNode;
+              newNode.insertChild(f, i);
           }
-          novosFilhos.clear();
         }
           
-      
-        NodeBElement<V> chavePromovida = no.removeLastElement()!;                       
+        NodeBElement<V> elementPromoted = no.removeLastElement()!;
         
-        left = no == _root ? no : null; 
-        right = novoNo;              
+        left = no == _root ? no : null;
+        right = newNode;
         
         if(no == _root){
             _root = null;
             no = null;
         }else{
-            no = no->getAscendente();
+            no = no.parent;
         }
 
-        _insert(chavePromovida, no, nodeLevel - 1, left, right);
+        _insert(elementPromoted, no, nodeLevel - 1, left, right);
       }
     }
   }
