@@ -6,7 +6,7 @@ import 'package:arvores_avl_redblack_b/src/interfaces/wrapper.dart';
 class TreeB<V> extends Tree<V>{
 
   final int t;
-  late final int minDegree, maxDegree, _middleI;
+  late final int maxDegree, _middleI;
 
   NodeB<V>? _root;
 
@@ -19,7 +19,6 @@ class TreeB<V> extends Tree<V>{
       throw "Invalid order!";
     }
     maxDegree = 2 * t - 1;
-    minDegree = t - 1;
     int mm = (maxDegree / 2).floor();
     if(maxDegree % 2 != 0){
       mm++;
@@ -40,7 +39,7 @@ class TreeB<V> extends Tree<V>{
     Wrapper<int> leftLevel = Wrapper(0);
 
     NodeB<V>? child = _getChild(id, no, false);
-    NodeB<V>? righterChild = getChildRighter(child, leftLevel);
+    NodeB<V>? righterChild = _getChildRighter(child, leftLevel);
 
     nodeDownLevel.v += leftLevel.v;
 
@@ -50,7 +49,7 @@ class TreeB<V> extends Tree<V>{
     
     Wrapper<int> rightLevel = Wrapper(0);
     child = _getChild(id, no, true);
-    NodeB<V>? lefterChild = getChildLefter(child, rightLevel);
+    NodeB<V>? lefterChild = _getChildLefter(child, rightLevel);
     
     if(lefterChild != null && lefterChild.lenght > _middleI - 1){
       nodeDownLevel.v += rightLevel.v;
@@ -60,16 +59,58 @@ class TreeB<V> extends Tree<V>{
     return righterChild!;
   }
 
-  NodeB<V>? getChildLefter(NodeB<V>? child, Wrapper<int> rightLevel){
-    //TODO:
+  NodeB<V> _getChildExtreme(int id, NodeB<V> no, bool isRight, Wrapper<int> level){
+      NodeB<V>? aux = _getChild(id, no, isRight);
+      NodeB<V> n = no;
+      level.v = 0;
+      while(aux != null){
+        level.v += 1;
+        n = aux;
+        int k = aux.getElementAt(isRight ? aux.lenght - 1 : 0)!.id;
+        aux = _getChild(k, aux, isRight);
+      }
+      return n;
   }
 
-  NodeB<V>? getChildRighter(NodeB<V>? child, Wrapper<int> leftLevel){
-    //TODO:
+  NodeB<V>? _getChildLefter(NodeB<V>? no, Wrapper<int> level){
+    if(no == null){
+      return null;
+    }
+
+    if(no.isSheet){
+        return no;
+    }
+    
+    int id = no.getElementAt(0)!.id;
+        
+    return _getChildExtreme(id, no, false, level);
+  }
+
+  NodeB<V>? _getChildRighter(NodeB<V>? no, Wrapper<int> level){
+    if(no == null){
+      return null;
+    }
+
+    if(no.isSheet){
+        return no;
+    }
+
+    int id = no.getElementAt(no.lenght - 1)!.id;
+
+    return _getChildExtreme(id, no, true, level);
   }
 
   NodeB<V>? _getBiggerBrotherThanMin(NodeB<V> no){
-    //TODO:
+    NodeB<V>? brother = no.left;
+    if(brother != null && brother.lenght > _middleI - 1){
+      return brother;
+    }
+    brother = no.right;
+    if(brother != null && brother.lenght > _middleI - 1){
+      return brother;
+    }
+    brother = null;
+    return null;
   }
 
   NodeB<V>? _getNodeToInsertNewElement(id, int stopLevel,  Wrapper<int> nodeLevel){
@@ -218,12 +259,100 @@ class TreeB<V> extends Tree<V>{
     return true;
   }
 
-  _redistributeElements(NodeB<V> no, NodeB<V> parent, NodeB<V> brother, int id, bool isStopLevel){
-    //TODO:
+  _redistributeElements(NodeB<V> no, NodeB<V> parent, NodeB<V> brother, int id, bool sp){
+    int downPos = 0, posNo = 0;
+    NodeB<V>? p;
+    
+    int fisrtElement = no.lenght > 0 ? no.getElementAt(0)!.id : id;
+    
+    NodeBElement<V>? promotedElement;
+    if(fisrtElement < brother.getElementAt(0)!.id){
+      if(sp){
+        p = brother.removeChildAt(0);
+        posNo = no.lenght + 1;
+      }
+      promotedElement = brother.removeElementAt(0);
+      downPos++;           
+    }else{
+      if(sp){
+        p = brother.removeLastChild();
+      }
+      promotedElement = brother.removeLastElement();
+    }
+    
+    int posicaoDaChavePromovida = parent.getPositionToNewElement(promotedElement!.id) - downPos;
+    NodeBElement<V> elementToDown = parent.getElementAt(posicaoDaChavePromovida)!;
+    
+    parent.removeElementAt(posicaoDaChavePromovida);
+    parent.insertElement(promotedElement);
+    
+    no.insertElement(elementToDown);
+    
+    if(p != null){
+      p.parent = no;
+      no.insertChild(p, posNo);  
+    }
   }
 
-  _combinateNodes(NodeB<V> no1, NodeB<V> no2, int id, int nodeLevel){
-    //TODO:
+  _combinateNodes(NodeB<V> no, NodeB<V> parent, int id, int nodeLevel){
+    NodeB<V>? brother = no.right;
+    int posNo = _middleI - 1,
+      amountOfNos = _middleI - 1;
+    
+    if(brother == null){
+      brother = no;
+    }else{
+      amountOfNos = brother.lenght + 1;
+    }
+
+    int firstElement = brother.lenght > 0 ? brother.getElementAt(0)!.id : id;
+    int posElementToDown = parent.getPositionToNewElement(firstElement);
+
+    if(posElementToDown > 0){
+      posElementToDown--;
+    }
+    
+    NodeBElement<V> elementToDown = parent.getElementAt(posElementToDown)!;
+    
+    if(brother == no){
+      no = no.left!; 
+      posNo = no.lenght + 1; 
+    }
+
+    no.insertElement(elementToDown);
+
+    for(int i=0; i < brother.lenght; i++){
+      no.insertElement(brother.getElementAt(i)!);
+    }
+
+    if(!brother.isSheet){
+      for(int i=0; i < amountOfNos; i++){
+        NodeB<V>? c = brother.getChildAt(i);
+        if(c != null){
+          c.parent = no;
+          no.insertChild(c, i + posNo);
+        }
+      }
+    }
+
+    if(posElementToDown > 0 && parent.contains(firstElement)){
+      posElementToDown--;
+    }
+
+    parent.removeElementAt(posElementToDown + 1);
+    brother = parent.getChildAt(posElementToDown + 1);
+    no.right = brother;
+        
+    if(brother != null){
+      brother.left = no; 
+    }  
+        
+    if(parent == _root && parent.lenght == 1){
+      _root = no;
+      no.parent = null;
+    }else{
+      _remove(elementToDown.id, parent, nodeLevel - 1, nodeLevel - 1);
+    }
   }
 
   _remove(int id, NodeB<V> no, int nodeLevel, int stopLevel){

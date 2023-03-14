@@ -41,6 +41,7 @@ void main() {
   b.remove(9);
   b.insert(11, "onze");
   b.insert(12, "doze");
+  b.remove(2);
+  b.remove(1);
   print(b.find(12));
-  print(b.find(9));
 }

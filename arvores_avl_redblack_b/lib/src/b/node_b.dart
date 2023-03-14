@@ -22,7 +22,7 @@ class NodeB<V>{
   }
 
   final int t;
-  late final int maxDegree, minDegree, _middleI;
+  late final int maxDegree, _middleI;
 
   final bool isSheet;
 
@@ -85,6 +85,15 @@ class NodeB<V>{
     return null;
   }
 
+  int getPositionToNewElement(int id){  
+    for(int i = 0; i < _lenght; i++){
+      if(id < _elements[i]!.id){
+        return i;
+      }
+    }
+    return _lenght;
+  }
+
   NodeB<V>? getNextNodeToElement(id){
     if(isSheet){
       return null;
@@ -92,7 +101,7 @@ class NodeB<V>{
     
     for(int i = 0; i < lenght; i++){
       if(id < _elements[i]!.id){
-          return _children[i];   
+          return _children[i];
       }
     }       
     
@@ -108,7 +117,40 @@ class NodeB<V>{
     return -1;
   }
 
-  NodeBElement<V>? removeElementAt(int index){  
+  NodeBElement<V>? removeLastElement(){                  
+    return removeElementAt(lenght - 1);
+  }
+
+  NodeB<V>? removeLastChild(){                  
+    return removeChildAt(lenght);
+  }
+
+  NodeB<V>? removeChildAt(int pos){  
+    if(!isSheet && pos >= 0 && pos < lenght + 1){
+      NodeB<V> p = _children[pos]!;
+      if(pos > 0){
+        _children[pos - 1]!.right = p.right;
+      }
+      if(pos < lenght){
+        _children[pos + 1]!.left = p.left;
+      }
+
+      p.parent = null;
+      p.left = null;
+      p.right = null;
+
+      for(int i = pos; i < lenght; i++){
+        _children[i] = _children[i + 1];
+      }
+      
+      _children[lenght] = null;
+      
+      return p;
+    }
+    return null;
+  }
+
+  NodeBElement<V>? removeElementAt(int index){
     if(index >= 0 && index < lenght){
       NodeBElement<V> element = _elements[index]!;
 
@@ -122,11 +164,6 @@ class NodeB<V>{
       return element;
     }
     return null;
-  }
-
-
-  NodeBElement<V>? removeLastElement(){                  
-    return removeElementAt(lenght - 1);
   }
 
   int removeElement(id){
@@ -187,7 +224,7 @@ class NodeB<V>{
     }
   }
 
-  List<NodeBElement<V>> splitElementas(){  
+  List<NodeBElement<V>> splitElementas(){
     List<NodeBElement<V>> elementsSeparated = [];
     
     for(int i = _middleI; i < _lenght; i++){
@@ -200,7 +237,7 @@ class NodeB<V>{
     return elementsSeparated;
   }
 
-  List<NodeB<V>>? splitChildren(){       
+  List<NodeB<V>>? splitChildren(){
     if(isSheet){
       return null;
     }
@@ -226,7 +263,7 @@ class NodeB<V>{
     }
   }
 
-  _destroy(){//TODO:
+  _destroy(){
     parent = null;
     left = null;
     right = null;
@@ -236,7 +273,6 @@ class NodeB<V>{
 
   NodeB.empty(this.t, this.isSheet){
     maxDegree = 2 * t - 1;
-    minDegree = t - 1;
     int mm = (maxDegree / 2).floor();
     if(maxDegree % 2 != 0){
       mm++;
