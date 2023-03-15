@@ -44,8 +44,21 @@ void main() {
   b.remove(2);
   b.remove(1);
   print(b.find(12));
+  b.insert(20, "vinte");
+  b.insert(22, "vinte e dois");
+  b.insert(24, "vinte e quatro");
+  b.insert(26, "vinte e seis");
+  b.insert(27, "vinte e sete");
+  b.insert(28, "vinte e oito");
+  b.insert(29, "vinte e nove");
+  b.insert(30, "trinta");
+  b.insert(31, "trinta e um");
+  b.insert(32, "trinta e dois");
+  b.insert(33, "trinta e três");
+  b.insert(40, "quarenta");
+  b.insert(41, "quarenta e um");
   String w = "";
-  b.getPath(12)?.forEach((e) {
+  b.getPath(41)?.forEach((e) {
     if(w == ""){
       w = e;
       return;

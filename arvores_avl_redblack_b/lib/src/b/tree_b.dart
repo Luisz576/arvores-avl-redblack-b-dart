@@ -114,19 +114,19 @@ class TreeB<V> extends Tree<V>{
   }
 
   NodeB<V>? _getNodeToInsertNewElement(id, int stopLevel,  Wrapper<int> nodeLevel){
-      nodeLevel.v = 1;
-      
-      NodeB<V>? noAux = _root;
-      
-      while(noAux != null){
-          if((stopLevel == nodeLevel.v) || noAux.isSheet) {
-            return noAux;
-          }   
-          noAux = noAux.getNextNodeToElement(id);
-          nodeLevel.v++;
+    nodeLevel.v = 1;
+    
+    NodeB<V>? noAux = _root;
+    
+    while(noAux != null){
+      if((stopLevel == nodeLevel.v) || noAux.isSheet) {
+        return noAux;
       }
+      noAux = noAux.getNextNodeToElement(id);
+      nodeLevel.v++;
+    }
 
-      return null; 
+    return null;
   }
 
   @override
@@ -157,6 +157,10 @@ class TreeB<V> extends Tree<V>{
 
     if(no == null){
       return null;
+    }
+
+    if(path[path.length - 1] == no.get(id)){
+      return path;
     }
 
     path.add(no.get(id) as V);
