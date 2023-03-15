@@ -94,6 +94,20 @@ class NodeB<V>{
     return _lenght;
   }
 
+  V? getElementThatNextNodeToElement(id){
+    if(isSheet){
+      return null;
+    }
+    
+    for(int i = 0; i < lenght; i++){
+      if(id < _elements[i]!.id){
+          return _elements[i]!.value;
+      }
+    }       
+    
+    return _elements[lenght - 1]!.value;
+  }
+
   NodeB<V>? getNextNodeToElement(id){
     if(isSheet){
       return null;

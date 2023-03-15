@@ -44,4 +44,13 @@ void main() {
   b.remove(2);
   b.remove(1);
   print(b.find(12));
+  String w = "";
+  b.getPath(12)?.forEach((e) {
+    if(w == ""){
+      w = e;
+      return;
+    }
+    w += " -> $e";
+  });
+  print(w);
 }

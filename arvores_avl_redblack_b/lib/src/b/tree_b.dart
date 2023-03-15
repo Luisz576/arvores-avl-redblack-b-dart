@@ -137,6 +137,32 @@ class TreeB<V> extends Tree<V>{
     return _search(id)?.get(id);
   }
 
+  List<V>? getPath(id ){
+    if(_root == null){
+      return null;
+    }
+
+    List<V> path = [];
+    NodeB<V>? no = _root;
+    while(no != null){
+      V? v = no.getElementThatNextNodeToElement(id);
+      if(v != null){
+        path.add(v);
+      }
+      if(no.contains(id)){
+        break;
+      }
+      no = no.getNextNodeToElement(id);
+    }
+
+    if(no == null){
+      return null;
+    }
+
+    path.add(no.get(id) as V);
+    return path;
+  }
+
   NodeB<V>? _search(id, {Wrapper<int>? nodeLevel}){     
     nodeLevel ??= Wrapper<int>(1);
     NodeB<V>? noAux = _root;
