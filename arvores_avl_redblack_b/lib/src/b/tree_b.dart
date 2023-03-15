@@ -1,6 +1,6 @@
+import 'package:arvores_avl_redblack_b/src/interfaces/tree.dart';
 import 'package:arvores_avl_redblack_b/src/b/node_b.dart';
 import 'package:arvores_avl_redblack_b/src/b/node_b_element.dart';
-import 'package:arvores_avl_redblack_b/src/interfaces/tree.dart';
 import 'package:arvores_avl_redblack_b/src/interfaces/wrapper.dart';
 
 class TreeB<V> extends Tree<V>{
@@ -159,7 +159,7 @@ class TreeB<V> extends Tree<V>{
       return null;
     }
 
-    if(path[path.length - 1] == no.get(id)){
+    if(path.isNotEmpty && path[path.length - 1] == no.get(id)){
       return path;
     }
 
